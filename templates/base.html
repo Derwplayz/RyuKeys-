@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ryu Market Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:wght@700;500;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { 
+      background: #0c0c0c; 
+      color: #f5f5f7; 
+      font-family: 'Montserrat', Arial, sans-serif; 
+      min-height: 100vh; 
+      margin: 0; 
+      padding: 0; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      overflow-x: hidden;
+    }
+    
+    /* Animated Particle Background */
+    .particles-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: #0c0c0c;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(26, 117, 255, 0.2);
+      border-radius: 50%;
+      animation: float 6s infinite ease-in-out;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-20px) translateX(10px); }
+      50% { transform: translateY(10px) translateX(-15px); }
+      75% { transform: translateY(-15px) translateX(-10px); }
+    }
+    
+    .glow-effect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(26, 117, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 92, 230, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(26, 117, 255, 0.08) 0%, transparent 50%);
+      animation: pulseGlow 8s ease-in-out infinite;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #1a75ff;
+      font-size: 1.5em;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .nav { 
+      width: 100%; 
+      background: rgba(12, 12, 12, 0.95); 
+      padding: 1em 1.5em; 
+      font-size: 1.1em; 
+      color: #1a75ff; 
+      font-weight: bold; 
+      border-bottom: 2px solid rgba(26, 117, 255, 0.4); 
+      letter-spacing: 1.5px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 0 20px rgba(26, 117, 255, 0.2);
+      box-sizing: border-box;
+    }
+    
+    .nav-brand { 
+      font-size: 1.2em; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      max-width: 200px;
+    }
+    
+    .nav-links { 
+      display: flex; 
+      gap: 15px; 
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    
+    .nav-links a { 
+      color: #1a75ff; 
+      text-decoration: none; 
+      font-size: 0.85em; 
+      transition: all 0.3s ease; 
+      text-shadow: 0 0 10px rgba(26, 117, 255, 0.5); 
+      white-space: nowrap;
+    }
+    
+    .nav-links a:hover { 
+      text-decoration: underline; 
+      color: #4d94ff; 
+      text-shadow: 0 0 15px rgba(26, 117, 255, 0.8); 
+    }
+
+    .card, .step-card, .key-card { 
+      margin: 2em 0 0.6em 0; 
+      background: rgba(20, 20, 20, 0.9); 
+      border-radius: 1em; 
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(26, 117, 255, 0.1); 
+      border: 1.5px solid rgba(26, 117, 255, 0.3); 
+      max-width: 410px; 
+      width: 94vw; 
+      text-align: center; 
+      padding: 2em 1.4em 1.5em 1.4em; 
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .card:hover, .step-card:hover, .key-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 25px rgba(26, 117, 255, 0.2);
+    }
+    .step-title { font-size:1.18em; color:#1a75ff; margin-bottom:1em; font-weight:700; text-shadow: 0 0 10px rgba(26, 117, 255, 0.5);}
+    .progress-btn { 
+      background: linear-gradient(135deg, #1a75ff, #0052cc); 
+      color: #fff; 
+      font-size: 1.10em; 
+      font-family: 'Montserrat', sans-serif; 
+      border: none; 
+      border-radius: 1em; 
+      padding: 0.8em 2em; 
+      font-weight: 600; 
+      margin: 1em 0; 
+      cursor: pointer; 
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(26, 117, 255, 0.3);
+    }
+    .progress-btn:disabled { background: #1a1a1a; color: #666; cursor: not-allowed; transform: none !important; box-shadow: none !important;}
+    .progress-btn:hover:not(:disabled) { 
+      background: linear-gradient(135deg, #0052cc, #0047b3);
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(26, 117, 255, 0.5);
+    }
+    .progress-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .progress-bar-bg { width: 100%; background: rgba(30, 30, 30, 0.8); border-radius: 1em; margin: 1.3em 0 1em 0; height: 1.2em; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+    .progress-bar-fill { background: linear-gradient(90deg, #1a75ff, #0052cc); height: 100%; border-radius: 1em; width: 0; transition: width 0.8s cubic-bezier(.23,1.05,.55,1); box-shadow: 0 0 10px rgba(26, 117, 255, 0.7);}
+    .code-box { font-size: 1.28em; background: rgba(15, 15, 15, 0.9); border-radius: 0.5em; border: 1.5px solid #1a75ff; padding: 0.5em 1em; color: #1a75ff; margin: 1em 0; user-select: all; cursor: pointer; font-weight: bold; transition: all 0.3s ease; backdrop-filter: blur(5px); box-shadow: 0 0 10px rgba(26, 117, 255, 0.2); text-shadow: 0 0 5px rgba(26, 117, 255, 0.5);}
+    .code-box:hover { background: rgba(25, 25, 25, 0.9); transform: scale(1.02); box-shadow: 0 0 20px rgba(26, 117, 255, 0.4); }
+    .copy-hint { font-size: 0.95em; color: #66a3ff; margin-bottom: 1em; }
+    .expire-txt { color: #66ff66; font-size: 1em; text-shadow: 0 0 5px rgba(102, 255, 102, 0.3); }
+    .warn { color: #ffcc66; margin: 0.5em 0 1em 0; }
+    .fail-msg { color: #1a75ff; font-weight: bold; text-shadow: 0 0 5px rgba(26, 117, 255, 0.3);}
+    .steps-nav { display:flex; gap:7px; justify-content:center; margin-bottom:1.1em;}
+    .step-dot { width:20px;height:20px;border-radius:100%;background:rgba(30, 30, 30, 0.8); border:1.2px solid #1a75ff;display:inline-block;line-height:19px;text-align:center; font-weight:bold;font-size:1em;color:#1a75ff;opacity:0.7; transition: all 0.3s ease; box-shadow: 0 0 5px rgba(26, 117, 255, 0.3);}
+    .step-dot.active { background:#1a75ff;color:#fff;opacity:1; box-shadow: 0 0 10px rgba(26, 117, 255, 0.7); }
+    .step-dot.done { background:#66ff66;color:#0c0c0c;opacity:1; box-shadow: 0 0 10px rgba(102, 255, 102, 0.5);}
+    .step-dot.locked { background:rgba(20, 20, 20, 0.8);color:#666;opacity:0.5;}
+    a { color: #1a75ff; text-decoration: underline; transition: color 0.3s ease; text-shadow: 0 0 5px rgba(26, 117, 255, 0.3); }
+    a:hover { color: #4d94ff; text-shadow: 0 0 10px rgba(26, 117, 255, 0.6); }
+    .help-section { text-align: left; margin: 1em 0; }
+    .help-section h3 { color: #1a75ff; margin-bottom: 0.5em; text-shadow: 0 0 5px rgba(26, 117, 255, 0.3); }
+    .help-section ul, .help-section ol { margin: 0.5em 0; padding-left: 1.5em; }
+    .help-section li { margin: 0.3em 0; }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+      .nav {
+        padding: 0.8em 1em;
+        flex-wrap: wrap;
+      }
+      
+      .nav-brand {
+        font-size: 1em;
+        max-width: 150px;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: rgba(15, 15, 15, 0.95);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        padding: 1em;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        border-top: 1px solid rgba(26, 117, 255, 0.3);
+      }
+      
+      .nav-links.active {
+        display: flex;
+      }
+      
+      .nav-links a {
+        padding: 0.8em 0;
+        font-size: 1em;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        text-align: center;
+      }
+      
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+      
+      .card, .step-card, .key-card {
+        padding: 1.8em 1.2em;
+        margin: 1.8em 0 0.8em 0;
+        border-radius: 0.9em;
+      }
+      
+      .progress-btn {
+        padding: 0.9em 1.8em;
+        font-size: 1.05em;
+        width: 100%;
+        max-width: 280px;
+      }
+      
+      .code-box {
+        font-size: 1.15em;
+        padding: 0.6em 0.9em;
+      }
+      
+      .step-title {
+        font-size: 1.15em;
+      }
+      
+      .steps-nav {
+        gap: 6px;
+      }
+      
+      .step-dot {
+        width: 22px;
+        height: 22px;
+        line-height: 21px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav {
+        padding: 0.7em 0.8em;
+      }
+      
+      .nav-brand {
+        max-width: 130px;
+        font-size: 0.95em;
+      }
+      
+      .card, .step-card, .key-card {
+        padding: 1.5em 1em;
+        margin: 1.5em 0 0.6em 0;
+        border-radius: 0.8em;
+      }
+      
+      .progress-btn {
+        padding: 0.85em;
+        font-size: 1em;
+        margin: 0.8em 0;
+      }
+      
+      .code-box {
+        font-size: 1.1em;
+        padding: 0.5em 0.8em;
+      }
+      
+      .step-title {
+        font-size: 1.1em;
+        margin-bottom: 0.8em;
+      }
+      
+      .steps-nav {
+        gap: 5px;
+        margin-bottom: 1em;
+      }
+      
+      .step-dot {
+        width: 20px;
+        height: 20px;
+        font-size: 0.9em;
+        line-height: 19px;
+      }
+      
+      .progress-bar-bg {
+        margin: 1em 0 0.8em 0;
+        height: 1.1em;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .nav {
+        padding: 0.6em 0.7em;
+      }
+      
+      .nav-brand {
+        font-size: 0.9em;
+        max-width: 110px;
+      }
+      
+      .card, .step-card, .key-card {
+        padding: 1.2em 0.8em;
+        margin: 1.2em 0 0.5em 0;
+      }
+      
+      .progress-btn {
+        padding: 0.8em;
+        font-size: 0.95em;
+      }
+      
+      .code-box {
+        font-size: 1em;
+        padding: 0.5em 0.7em;
+      }
+      
+      .step-title {
+        font-size: 1em;
+      }
+      
+      .steps-nav {
+        gap: 4px;
+      }
+      
+      .step-dot {
+        width: 18px;
+        height: 18px;
+        font-size: 0.85em;
+        line-height: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="particles-bg" id="particles-bg"></div>
+  <div class="glow-effect"></div>
+  <div class="nav">
+    <div class="nav-brand">RYU MARKET GENERATOR</div>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    <div class="nav-links" id="navLinks">
+      <a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
+      {% if session.discord_user %}
+      <a href="{{ url_for('generators') }}"><i class="fas fa-robot"></i> Generators</a>
+      {% endif %}
+      <a href="{{ url_for('store') }}"><i class="fas fa-store"></i> Store</a>
+      <a href="{{ url_for('key_management') }}"><i class="fas fa-key"></i> My Keys</a>
+      <a href="{{ url_for('help_page') }}"><i class="fas fa-question-circle"></i> Help</a>
+      {% if session.discord_user %}
+      <a href="{{ url_for('discord_logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      {% else %}
+      <a href="{{ url_for('discord_login') }}"><i class="fab fa-discord"></i> Login</a>
+      {% endif %}
+    </div>
+  </div>
+  {% block content %}{% endblock %}
+  <script>
+    function createParticles() {
+      const container = document.getElementById('particles-bg');
+      const particleCount = 30; // Reduced for mobile performance
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        const size = Math.random() * 5 + 2; // Smaller particles on mobile
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 6;
+        const duration = 6 + Math.random() * 4;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        container.appendChild(particle);
+      }
+    }
+    
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('navLinks');
+      navLinks.classList.toggle('active');
+    }
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const navLinks = document.getElementById('navLinks');
+      const mobileBtn = document.querySelector('.mobile-menu-btn');
+      if (!navLinks.contains(event.target) && !mobileBtn.contains(event.target)) {
+        navLinks.classList.remove('active');
+      }
+    });
+    
+    function copyCode() {
+      const code = document.querySelector('.code-box');
+      if (code) {
+        navigator.clipboard.writeText(code.textContent);
+        let hint = document.getElementById('copyHint');
+        if(hint) { 
+          hint.style.color="#1a75ff"; 
+          hint.textContent="Copied!"; 
+          setTimeout(()=>{ 
+            hint.textContent="Click code to copy."; 
+            hint.style.color="#66a3ff"; 
+          }, 1500);
+        }
+      }
+    }
+    
+    function animateProgress(current, max) {
+      let bar = document.querySelector('.progress-bar-fill');
+      if(bar) { bar.style.width = (100 * current/max) + "%"; }
+      let dots = document.querySelectorAll('.step-dot');
+      dots.forEach((dot, i) => {
+        if(i+1 < current) dot.classList.add("done");
+        if(i+1 == current) dot.classList.add("active");
+        if(i+1 > current) dot.classList.add("locked");
+      });
+    }
+    
+    document.addEventListener('DOMContentLoaded', ()=>{
+      createParticles();
+      {% if step %}
+        animateProgress({{ step }}, {{ max_level }});
+      {% endif %}
+    });
+  </script>
+</body>
+</html>

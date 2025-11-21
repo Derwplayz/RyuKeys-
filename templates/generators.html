@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 1200px;">
+    <!-- User Info Header -->
+    <div style="background: linear-gradient(135deg, rgba(26, 117, 255, 0.1), rgba(26, 117, 255, 0.05)); padding: 1.5em; border-radius: 1em; border: 2px solid rgba(26, 117, 255, 0.3); margin-bottom: 2em;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1em;">
+            <div style="display: flex; align-items: center; gap: 1em;">
+                {% if discord_user.avatar %}
+                <img src="https://cdn.discordapp.com/avatars/{{ discord_user.id }}/{{ discord_user.avatar }}.png" 
+                     style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #1a75ff;">
+                {% else %}
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: #1a75ff; display: flex; align-items: center; justify-content: center; border: 2px solid #1a75ff;">
+                    <i class="fas fa-user" style="color: white; font-size: 1.8em;"></i>
+                </div>
+                {% endif %}
+                <div>
+                    <div style="font-size: 1.4em; color: #1a75ff; font-weight: bold;">
+                        {{ discord_user.username }}{% if discord_user.discriminator != '0' %}#{{ discord_user.discriminator }}{% endif %}
+                    </div>
+                    <div style="display: flex; gap: 0.5em; flex-wrap: wrap; margin-top: 0.3em;">
+                        <span class="tier-badge tier-{{ user_tier }}">{{ user_tier.upper() }}</span>
+                        {% if has_no_cooldown %}
+                        <span class="tier-badge tier-special">⚡ NO COOLDOWN</span>
+                        {% endif %}
+                        {% if is_admin %}
+                        <span class="tier-badge tier-admin">👑 ADMIN</span>
+                        {% endif %}
+                    </div>
+                    <div style="color: #66a3ff; font-size: 0.9em; margin-top: 0.3em;">
+                        Discord ID: {{ discord_user.id }}
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div style="color: #66a3ff; font-size: 0.9em; margin-bottom: 0.5em;">Account Status</div>
+                <div style="display: flex; gap: 0.5em; flex-wrap: wrap; justify-content: flex-end;">
+                    <span style="background: rgba(0, 255, 0, 0.1); color: #00ff00; padding: 0.3em 0.8em; border-radius: 1em; border: 1px solid rgba(0, 255, 0, 0.3); font-size: 0.8em;">
+                        <i class="fas fa-check-circle"></i> Active
+                    </span>
+                    <a href="{{ url_for('discord_logout') }}" style="text-decoration: none;">
+                        <button class="progress-btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); padding: 0.5em 1em; font-size: 0.9em;">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Role Information -->
+    {% if session.debug_tier_calc %}
+    <div style="background: rgba(255, 165, 0, 0.1); padding: 1em; border-radius: 0.5em; border: 1px solid rgba(255, 165, 0, 0.3); margin-bottom: 1em;">
+        <div style="color: #ffa500; font-weight: bold; margin-bottom: 0.5em;">
+            <i class="fas fa-bug"></i> Role Debug Info
+        </div>
+        <div style="color: #ffcc99; font-size: 0.8em; font-family: monospace;">
+            <div>Tier: {{ session.debug_tier_calc.tier }} | No CD: {{ session.debug_tier_calc.no_cooldown }} | Admin: {{ session.debug_tier_calc.admin }} | Member: {{ session.debug_tier_calc.member }}</div>
+            <div>Roles: {{ session.debug_roles }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Dashboard Stats -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1em; margin-bottom: 2em;">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(26, 117, 255, 0.2);">
+                <i class="fas fa-robot" style="color: #1a75ff;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ available_services|length }}</div>
+                <div class="stat-label">Available Services</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(0, 255, 0, 0.2);">
+                <i class="fas fa-bolt" style="color: #00ff00;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">
+                    {% if has_no_cooldown %}
+                    None
+                    {% else %}
+                    {% if user_tier == 'free' %}5m{% elif user_tier == 'boost' %}3m{% elif user_tier == 'premium' %}1m{% else %}30s{% endif %}
+                    {% endif %}
+                </div>
+                <div class="stat-label">Cooldown</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(255, 215, 0, 0.2);">
+                <i class="fas fa-crown" style="color: #ffd700;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">{{ user_tier.upper() }}</div>
+                <div class="stat-label">Current Tier</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(255, 105, 180, 0.2);">
+                <i class="fas fa-shield-alt" style="color: #ff69b4;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">
+                    {% if is_admin %}Admin{% else %}User{% endif %}
+                </div>
+                <div class="stat-label">Access Level</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generator Section -->
+    <div style="margin-bottom: 2em;">
+        <div style="font-size:1.35em;color:#1a75ff;margin-bottom:1em;font-weight:bold;text-shadow: 0 0 10px rgba(26, 117, 255, 0.5); text-align: center;">
+            <i class="fas fa-robot"></i> Account Generators
+        </div>
+        
+        {% if available_services %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5em;">
+            {% for service in available_services %}
+            <div class="service-card" data-service="{{ service }}">
+                <div style="text-align: center; margin-bottom: 1em;">
+                    <div style="font-size: 1.2em; color: #1a75ff; font-weight: bold; margin-bottom: 0.5em;">
+                        <i class="fas fa-shield-alt"></i> {{ service.upper() }}
+                    </div>
+                    <div class="tier-badge tier-{{ user_tier }}">{{ user_tier.upper() }} TIER</div>
+                </div>
+
+                <div style="margin-bottom: 1.5em;">
+                    <div style="display: flex; align-items: center; margin-bottom: 0.8em; padding: 0.8em; background: rgba(20, 20, 20, 0.6); border-radius: 0.5em;">
+                        <i class="fas fa-bolt" style="color: #1a75ff; margin-right: 10px;"></i>
+                        <span style="color: #fff; font-weight: 500;">
+                            Cooldown: 
+                            {% if has_no_cooldown %}
+                            <span style="color: #00ff00;">None</span>
+                            {% else %}
+                            <span style="color: #ffcc66;">
+                                {% if user_tier == 'free' %}5m{% elif user_tier == 'boost' %}3m{% elif user_tier == 'premium' %}1m{% else %}30s{% endif %}
+                            </span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <button class="generate-btn progress-btn" data-service="{{ service }}" style="width: 100%;">
+                    <i class="fas fa-download"></i> Generate Account
+                </button>
+
+                <div class="result-container" style="display: none; margin-top: 1em; padding: 1em; background: rgba(20, 20, 20, 0.8); border-radius: 0.5em; border: 1px solid rgba(26, 117, 255, 0.3);">
+                    <div class="result-content" style="color: #fff;"></div>
+                    <button class="copy-btn progress-btn" style="width: 100%; margin-top: 0.5em; display: none; background: linear-gradient(135deg, #00cc44, #009933);">
+                        <i class="fas fa-copy"></i> Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3em; background: rgba(255, 0, 0, 0.1); border-radius: 1em; border: 2px solid rgba(255, 0, 0, 0.3);">
+            <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #ff6666; margin-bottom: 0.5em;"></i>
+            <div style="color: #ff6666; font-size: 1.2em; font-weight: bold; margin-bottom: 0.5em;">
+                No Services Available
+            </div>
+            <div style="color: #ff9999;">
+                Your current tier ({{ user_tier.upper() }}) does not have access to any generators.
+                Please contact support or upgrade your tier.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="background: rgba(20, 20, 20, 0.8); padding: 1.5em; border-radius: 1em; border: 1px solid rgba(26, 117, 255, 0.2); margin-bottom: 2em;">
+        <div style="color: #1a75ff; font-weight: bold; margin-bottom: 1em; text-align: center; font-size: 1.2em;">
+            <i class="fas fa-rocket"></i> Quick Actions
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1em;">
+            <a href="{{ url_for('store') }}" style="text-decoration: none;">
+                <div class="quick-action-card">
+                    <i class="fas fa-store" style="font-size: 1.5em; color: #1a75ff; margin-bottom: 0.5em;"></i>
+                    <div>Store</div>
+                </div>
+            </a>
+            <a href="{{ url_for('key_management') }}" style="text-decoration: none;">
+                <div class="quick-action-card">
+                    <i class="fas fa-key" style="font-size: 1.5em; color: #1a75ff; margin-bottom: 0.5em;"></i>
+                    <div>My Keys</div>
+                </div>
+            </a>
+            <a href="{{ url_for('help_page') }}" style="text-decoration: none;">
+                <div class="quick-action-card">
+                    <i class="fas fa-question-circle" style="font-size: 1.5em; color: #1a75ff; margin-bottom: 0.5em;"></i>
+                    <div>Help</div>
+                </div>
+            </a>
+            {% if user_tier != 'pro' %}
+            <a href="https://discord.com/channels/1391817979754319902/1404938184629944484" target="_blank" style="text-decoration: none;">
+                <div class="quick-action-card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05)); border-color: rgba(255, 215, 0, 0.3);">
+                    <i class="fas fa-arrow-up" style="font-size: 1.5em; color: #ffd700; margin-bottom: 0.5em;"></i>
+                    <div>Upgrade</div>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Upgrade Banner (only show if not pro) -->
+    {% if user_tier != 'pro' %}
+    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05)); padding: 1.5em; border-radius: 1em; border: 2px solid rgba(255, 215, 0, 0.3);">
+        <div style="text-align: center;">
+            <div style="font-size: 1.3em; color: #ffd700; font-weight: bold; margin-bottom: 0.5em;">
+                <i class="fas fa-gem"></i> Unlock Premium Features
+            </div>
+            <div style="color: #ffcc66; margin-bottom: 1em;">
+                Upgrade your tier to get access to more services, better accounts, and shorter cooldowns!
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1em; margin-bottom: 1.5em;">
+                <div class="upgrade-feature">
+                    <i class="fas fa-rocket" style="color: #ffadf7;"></i>
+                    <div>Shorter Cooldowns</div>
+                </div>
+                <div class="upgrade-feature">
+                    <i class="fas fa-star" style="color: #0080ff;"></i>
+                    <div>Premium Accounts</div>
+                </div>
+                <div class="upgrade-feature">
+                    <i class="fas fa-crown" style="color: #ffd700;"></i>
+                    <div>Exclusive Services</div>
+                </div>
+            </div>
+
+            <a href="https://discord.com/channels/1391817979754319902/1404938184629944484" target="_blank" style="text-decoration: none;">
+                <button class="progress-btn" style="background: linear-gradient(135deg, #ffd700, #ffaa00);">
+                    <i class="fas fa-ticket-alt"></i> Upgrade in Discord
+                </button>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.tier-badge {
+    padding: 0.3em 0.8em;
+    border-radius: 1em;
+    font-size: 0.8em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.tier-free { background: rgba(0, 204, 68, 0.2); color: #00cc44; border: 1px solid rgba(0, 204, 68, 0.3); }
+.tier-boost { background: rgba(255, 173, 247, 0.2); color: #ffadf7; border: 1px solid rgba(255, 173, 247, 0.3); }
+.tier-premium { background: rgba(0, 128, 255, 0.2); color: #0080ff; border: 1px solid rgba(0, 128, 255, 0.3); }
+.tier-pro { background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3); }
+.tier-special { background: rgba(255, 105, 180, 0.2); color: #ff69b4; border: 1px solid rgba(255, 105, 180, 0.3); }
+.tier-admin { background: rgba(220, 20, 60, 0.2); color: #dc143c; border: 1px solid rgba(220, 20, 60, 0.3); }
+.tier-none { background: rgba(128, 128, 128, 0.2); color: #808080; border: 1px solid rgba(128, 128, 128, 0.3); }
+
+.stat-card {
+    background: linear-gradient(135deg, rgba(26, 117, 255, 0.1), rgba(26, 117, 255, 0.05));
+    padding: 1.5em;
+    border-radius: 1em;
+    border: 2px solid rgba(26, 117, 255, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(26, 117, 255, 0.6);
+    box-shadow: 0 8px 20px rgba(26, 117, 255, 0.2);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #1a75ff;
+    margin-bottom: 0.2em;
+}
+
+.stat-label {
+    color: #66a3ff;
+    font-size: 0.9em;
+}
+
+.quick-action-card {
+    background: linear-gradient(135deg, rgba(26, 117, 255, 0.1), rgba(26, 117, 255, 0.05));
+    padding: 1.5em;
+    border-radius: 0.8em;
+    border: 2px solid rgba(26, 117, 255, 0.3);
+    text-align: center;
+    color: #1a75ff;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(26, 117, 255, 0.6);
+    box-shadow: 0 8px 20px rgba(26, 117, 255, 0.2);
+    color: #4d94ff;
+}
+
+.service-card {
+    background: linear-gradient(135deg, rgba(26, 117, 255, 0.1), rgba(26, 117, 255, 0.05));
+    padding: 1.5em;
+    border-radius: 1em;
+    border: 2px solid rgba(26, 117, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(26, 117, 255, 0.6);
+    box-shadow: 0 10px 25px rgba(26, 117, 255, 0.2);
+}
+
+.upgrade-feature {
+    text-align: center;
+    padding: 1em;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 0.5em;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+}
+
+.generate-btn:disabled {
+    background: #1a1a1a !important;
+    color: #666 !important;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+@media (max-width: 768px) {
+    .card {
+        max-width: 94vw !important;
+    }
+    
+    .stat-card {
+        padding: 1.2em;
+    }
+    
+    .quick-action-card {
+        padding: 1.2em;
+    }
+    
+    .service-card {
+        padding: 1.2em;
+    }
+    
+    .stat-number {
+        font-size: 1.3em;
+    }
+}
+
+@media (max-width: 480px) {
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.8em;
+    }
+    
+    .quick-action-card {
+        padding: 1em;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const generateButtons = document.querySelectorAll('.generate-btn');
+    const cooldowns = {};
+    
+    generateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const service = this.dataset.service;
+            generateAccount(service, this);
+        });
+    });
+    
+    function generateAccount(service, button) {
+        // Disable button and show loading
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        
+        // Hide any previous results
+        const card = button.closest('.service-card');
+        const resultContainer = card.querySelector('.result-container');
+        const resultContent = card.querySelector('.result-content');
+        const copyButton = card.querySelector('.copy-btn');
+        
+        resultContainer.style.display = 'none';
+        resultContent.textContent = '';
+        copyButton.style.display = 'none';
+        
+        // Make API call
+        fetch(`/generate/${service}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success
+                    resultContent.innerHTML = `
+                        <div style="color: #00ff00; font-weight: bold; margin-bottom: 0.5em;">
+                            <i class="fas fa-check-circle"></i> Account Generated!
+                        </div>
+                        <div style="background: rgba(0, 0, 0, 0.5); padding: 1em; border-radius: 0.5em; border: 1px solid rgba(0, 255, 0, 0.3);">
+                            <pre style="margin: 0; color: #fff; white-space: pre-wrap;">${data.account}</pre>
+                        </div>
+                        <div style="color: #66ff66; font-size: 0.9em; margin-top: 0.5em;">
+                            Service: ${data.service} | Tier: ${data.tier}
+                        </div>
+                    `;
+                    resultContainer.style.display = 'block';
+                    copyButton.style.display = 'block';
+                    
+                    // Set up copy button
+                    copyButton.onclick = function() {
+                        navigator.clipboard.writeText(data.account).then(() => {
+                            const originalText = copyButton.innerHTML;
+                            copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                            setTimeout(() => {
+                                copyButton.innerHTML = originalText;
+                            }, 2000);
+                        });
+                    };
+                    
+                    // Set cooldown
+                    if (!{{ 'true' if has_no_cooldown else 'false' }}) {
+                        const cooldownTime = {{ 300 if user_tier == 'free' else (180 if user_tier == 'boost' else (60 if user_tier == 'premium' else 30)) }}; // seconds
+                        startCooldown(service, button, cooldownTime);
+                    }
+                    
+                } else {
+                    // Show error
+                    resultContent.innerHTML = `
+                        <div style="color: #ff6666; font-weight: bold;">
+                            <i class="fas fa-times-circle"></i> Error: ${data.error}
+                        </div>
+                    `;
+                    resultContainer.style.display = 'block';
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-download"></i> Generate Account';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultContent.innerHTML = `
+                    <div style="color: #ff6666; font-weight: bold;">
+                        <i class="fas fa-times-circle"></i> Network error. Please try again.
+                    </div>
+                `;
+                resultContainer.style.display = 'block';
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-download"></i> Generate Account';
+            });
+    }
+    
+    function startCooldown(service, button, cooldownTime) {
+        const endTime = Date.now() + (cooldownTime * 1000);
+        cooldowns[service] = endTime;
+        
+        function updateCooldown() {
+            const remaining = endTime - Date.now();
+            
+            if (remaining <= 0) {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-download"></i> Generate Account';
+                clearInterval(interval);
+                return;
+            }
+            
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            button.innerHTML = `<i class="fas fa-clock"></i> ${minutes}m ${seconds}s`;
+        }
+        
+        updateCooldown();
+        const interval = setInterval(updateCooldown, 1000);
+    }
+});
+</script>
+{% endblock %}

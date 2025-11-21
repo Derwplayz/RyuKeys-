@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block content %}
+{% if error %}
+<div class="key-card">
+  <div class="fail-msg" style="line-height:1.4;">
+    You already claimed a key from this device/IP.<br>
+    Please try again later or clear your existing keys.
+  </div>
+  <div style="margin-top:1.5em;">
+    <a href="{{ url_for('clear_keys') }}" style="text-decoration: none;">
+      <button class="progress-btn" style="background:linear-gradient(135deg, #ff6b6b, #ee5a52);">
+        Clear My Keys & Start Over
+      </button>
+    </a>
+  </div>
+  <div style="color:#66a3ff; font-size:0.9em; margin-top:1em;">
+    This will remove any unused keys associated with your IP and reset your progress.
+  </div>
+</div>
+{% else %}
+<div class="key-card">
+  {{ nav|safe }}
+  <div style="font-size:1.09em;">Your key:</div>
+  <div class="code-box" onclick="copyCode()">{{ code }}</div>
+  <div id="copyHint" class="copy-hint">Click code to copy.</div>
+  <div class="expire-txt">Use this key in the Discord bot within 12h.</div>
+  <div class="warn" style="line-height:1.3;">Send <b>/Redeem {{ code }}</b> to the Discord bot!</div>
+
+  <!-- Three Action Buttons -->
+  <div style="display: flex; flex-direction: column; gap: 0.8em; margin-top: 1.5em;">
+    <a href="https://discord.com/channels/1391817979754319902/1391871312015790136" target="_blank" style="text-decoration: none;">
+      <div style="background: linear-gradient(135deg, #1a75ff, #0052cc); padding: 1em; border-radius: 0.8em; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(26, 117, 255, 0.3); box-shadow: 0 0 15px rgba(26, 117, 255, 0.2);">
+        <div style="font-size:1.1em;font-weight:bold;color:#fff;">
+          <i class="fas fa-robot"></i> Redeem Key on Discord
+        </div>
+        <div style="font-size:0.85em;color:#e0e8ff;margin-top:0.3em;line-height:1.3;">
+          Go directly to the bot channel to redeem
+        </div>
+      </div>
+    </a>
+
+    <div style="display: flex; gap: 0.8em;">
+      <a href="{{ url_for('clear_keys') }}" style="text-decoration: none; flex: 1;">
+        <div style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); padding: 1em; border-radius: 0.8em; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255, 107, 107, 0.3); box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);">
+          <div style="font-size:1em;font-weight:bold;color:#fff;">
+            <i class="fas fa-trash-alt"></i> Clear Keys
+          </div>
+          <div style="font-size:0.8em;color:#ffe0e0;margin-top:0.2em;line-height:1.3;">
+            Remove all keys
+          </div>
+        </div>
+      </a>
+
+      <a href="{{ url_for('show_keys') }}" style="text-decoration: none; flex: 1;">
+        <div style="background: linear-gradient(135deg, #00cc44, #009933); padding: 1em; border-radius: 0.8em; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(0, 204, 68, 0.3); box-shadow: 0 0 15px rgba(0, 204, 68, 0.2);">
+          <div style="font-size:1em;font-weight:bold;color:#fff;">
+            <i class="fas fa-list"></i> Show Keys
+          </div>
+          <div style="font-size:0.8em;color:#e0ffe8;margin-top:0.2em;line-height:1.3;">
+            View my keys
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <a href="{{ url_for('key_management') }}" style="text-decoration: none;">
+      <div style="background: linear-gradient(135deg, #9400d3, #4b0082); padding: 0.8em; border-radius: 0.8em; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(148, 0, 211, 0.3); box-shadow: 0 0 15px rgba(148, 0, 211, 0.2);">
+        <div style="font-size:0.95em;font-weight:bold;color:#fff;">
+          <i class="fas fa-cog"></i> Key Management Hub
+        </div>
+        <div style="font-size:0.75em;color:#e0d8ff;margin-top:0.2em;line-height:1.3;">
+          All key tools in one place
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Quick Actions Info -->
+  <div style="background: rgba(20, 20, 20, 0.6); padding: 1em; border-radius: 0.5em; border: 1px solid rgba(26, 117, 255, 0.3); margin-top: 1.5em;">
+    <div style="color: #1a75ff; font-weight: bold; margin-bottom: 0.5em; text-align: center;">
+      <i class="fas fa-bolt"></i> Quick Actions
+    </div>
+    <div style="color: #b4b9c6; font-size: 0.85em; text-align: center; line-height: 1.4;">
+      • <strong>Redeem</strong>: Go to Discord bot channel<br>
+      • <strong>Clear Keys</strong>: Remove all your keys<br>
+      • <strong>Show Keys</strong>: View all your active keys<br>
+      • <strong>Management Hub</strong>: All key tools
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+function copyCode() {
+    const code = document.querySelector('.code-box');
+    if (code) {
+        navigator.clipboard.writeText(code.textContent);
+        let hint = document.getElementById('copyHint');
+        if(hint) { 
+            hint.style.color="#1a75ff"; 
+            hint.textContent="Copied!"; 
+            setTimeout(()=>{ 
+                hint.textContent="Click code to copy."; 
+                hint.style.color="#66a3ff"; 
+            }, 1500);
+        }
+        
+        // Optional: Show a success message for the buttons too
+        const redeemBtn = document.querySelector('a[href*="discord.com"] div');
+        if (redeemBtn) {
+            const originalText = redeemBtn.innerHTML;
+            redeemBtn.innerHTML = '<i class="fas fa-check"></i> Copied! Ready to Redeem';
+            redeemBtn.style.background = 'linear-gradient(135deg, #00cc44, #009933)';
+            setTimeout(() => {
+                redeemBtn.innerHTML = originalText;
+                redeemBtn.style.background = 'linear-gradient(135deg, #1a75ff, #0052cc)';
+            }, 2000);
+        }
+    }
+}
+</script>
+
+<style>
+@media (max-width: 480px) {
+    .key-card a div {
+        padding: 0.8em !important;
+    }
+    .key-card a div div:first-child {
+        font-size: 1em !important;
+    }
+    .key-card a div div:last-child {
+        font-size: 0.75em !important;
+    }
+    
+    /* For the two-button row */
+    .key-card > div > div:nth-child(6) > a div div:first-child {
+        font-size: 0.9em !important;
+    }
+    .key-card > div > div:nth-child(6) > a div div:last-child {
+        font-size: 0.7em !important;
+    }
+}
+</style>
+{% endblock %}

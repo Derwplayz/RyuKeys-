@@ -1,0 +1,23 @@
+[
+  {
+    "code": "ONE-MS4Z51UU7Y",
+    "used": false,
+    "claimed_by": null,
+    "claimed_at": null,
+    "claimed_ip": null
+  },
+  {
+    "code": "SHPOCFNQYVEC",
+    "used": false,
+    "claimed_by": "admin",
+    "claimed_at": "2025-11-03T23:07:31.018824+00:00",
+    "claimed_ip": "127.0.0.1"
+  },
+  {
+    "code": "6EFEGCTDTR3M",
+    "used": false,
+    "claimed_by": "admin",
+    "claimed_at": "2025-11-03T23:20:05.188926+00:00",
+    "claimed_ip": "127.0.0.1"
+  }
+]

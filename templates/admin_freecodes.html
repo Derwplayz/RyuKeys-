@@ -1,0 +1,138 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="admin-card">
+    <h2>🔑 Free Codes Management</h2>
+
+    <!-- Search Form -->
+    <form method="post" class="form-row">
+        <input type="text" name="search_term" placeholder="Search free keys..." value="{{ search_term }}" style="flex: 2;">
+        <select name="search_filter" style="flex: 1;">
+            <option value="all" {% if search_filter == 'all' %}selected{% endif %}>All Fields</option>
+            <option value="key" {% if search_filter == 'key' %}selected{% endif %}>Key Code</option>
+            <option value="user" {% if search_filter == 'user' %}selected{% endif %}>User ID</option>
+            <option value="date" {% if search_filter == 'date' %}selected{% endif %}>Date</option>
+            <option value="ip" {% if search_filter == 'ip' %}selected{% endif %}>IP Address</option>
+            <option value="discord" {% if search_filter == 'discord' %}selected{% endif %}>Discord ID</option>
+        </select>
+        <button type="submit" name="action" value="search">🔍 Search</button>
+        {% if search_term %}
+        <a href="{{ url_for('admin_freecodes') }}" class="menu-item action-btn" style="text-decoration: none; margin: 0;">❌ Clear</a>
+        {% endif %}
+    </form>
+
+    <!-- Add Code Forms -->
+    <div class="form-row">
+        <form method="post" style="margin: 0;">
+            <button type="submit" name="action" value="add_hulk">➕ Add Hulk Code</button>
+        </form>
+        <form method="post" style="margin: 0;">
+            <button type="submit" name="action" value="add_one">➕ Add One Code</button>
+        </form>
+        <form method="post" class="form-row" style="margin: 0; flex: 2;">
+            <input type="text" name="custom_code" placeholder="Custom code..." style="flex: 1;">
+            <button type="submit" name="action" value="add_custom">➕ Add Custom</button>
+        </form>
+    </div>
+
+    {% if message %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+
+    <!-- Results Count and Export -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 1.5em 0; flex-wrap: wrap; gap: 1em;">
+        <div style="color: #b4b9c6;">
+            📊 Showing {{ filtered_codes|length }} of {{ codes|length }} codes
+            {% if search_term %}matching "{{ search_term }}"{% endif %}
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ url_for('admin_export_free_keys') }}?status=all" class="menu-item action-btn" style="text-decoration: none; background: #00cc44; border-color: #00cc44;">📥 Export All</a>
+            <a href="{{ url_for('admin_export_free_keys') }}?status=active" class="menu-item action-btn" style="text-decoration: none;">📥 Export Active</a>
+            <a href="{{ url_for('admin_export_free_keys') }}?status=used" class="menu-item action-btn" style="text-decoration: none; background: #666; border-color: #666;">📥 Export Used</a>
+        </div>
+    </div>
+
+    <!-- Codes List -->
+    <form method="post" id="deleteForm">
+        <div style="display: flex; gap: 1em; margin-bottom: 1em; flex-wrap: wrap;">
+            <button type="submit" name="action" value="delete_selected" class="delete-btn">
+                🗑️ Delete Selected Codes
+            </button>
+            <button type="button" onclick="selectAllCodes()" class="menu-item action-btn" style="border: none; cursor: pointer;">
+                ✅ Select All
+            </button>
+            <button type="button" onclick="deselectAllCodes()" class="menu-item action-btn" style="border: none; cursor: pointer;">
+                ❌ Deselect All
+            </button>
+        </div>
+
+        <div class="key-list" style="max-height: 600px; overflow-y: auto;">
+            {% if filtered_codes %}
+                {% for code_obj in filtered_codes %}
+                <div class='checkbox-item' style="display: flex; align-items: flex-start; padding: 1em; border-bottom: 1px solid rgba(26, 117, 255, 0.1);">
+                    <input type='checkbox' name='selected_codes' value='{{ code_obj.code }}' style='margin-right: 15px; margin-top: 5px;'>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5em;">
+                            <div>
+                                <strong style="color: #1a75ff; font-size: 1.1em;">{{ code_obj.code }}</strong>
+                                <span class="status-badge {% if not code_obj.used %}status-active{% else %}status-used{% endif %}" style="margin-left: 10px;">
+                                    {% if not code_obj.used %}✅ Active{% else %}❌ Used{% endif %}
+                                </span>
+                            </div>
+                            <button type="button" onclick="copyToClipboard('{{ code_obj.code }}')" class="menu-item action-btn" style="border: none; cursor: pointer; padding: 0.3em 0.6em; font-size: 0.8em;">
+                                📋 Copy
+                            </button>
+                        </div>
+                        
+                        {% if code_obj.discord_id %}
+                        <div style="color: #b4b9c6; font-size: 0.9em; margin-bottom: 0.5em;">
+                            <div><strong>Discord User:</strong> {{ code_obj.discord_username or 'Unknown' }} (ID: {{ code_obj.discord_id }})</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if code_obj.used %}
+                        <div style="color: #b4b9c6; font-size: 0.9em;">
+                            <div><strong>Claimed by:</strong> {{ code_obj.claimed_by or 'Unknown' }}</div>
+                            <div><strong>At:</strong> {{ code_obj.claimed_at or 'Unknown time' }}</div>
+                            <div><strong>IP:</strong> {{ code_obj.claimed_ip or 'Unknown IP' }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="color:#ccc; padding:2em; text-align:center; background: rgba(20, 20, 20, 0.5); border-radius: 8px;">
+                    📭 No codes found
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+function selectAllCodes() {
+    const checkboxes = document.querySelectorAll('input[name="selected_codes"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function deselectAllCodes() {
+    const checkboxes = document.querySelectorAll('input[name="selected_codes"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Optional: Show a temporary notification
+        const originalText = event.target.textContent;
+        event.target.textContent = '✅ Copied!';
+        setTimeout(() => {
+            event.target.textContent = originalText;
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

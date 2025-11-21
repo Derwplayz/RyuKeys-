@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <h3>🔧 Admin Panel</h3>
+        </div>
+        <div class="sidebar-menu">
+            <a href="{{ url_for('admin') }}" class="menu-item {% if request.endpoint == 'admin' %}active{% endif %}">
+                📊 Dashboard
+            </a>
+            <a href="{{ url_for('admin_freecodes') }}" class="menu-item {% if request.endpoint == 'admin_freecodes' %}active{% endif %}">
+                🔑 Free Keys
+            </a>
+            <a href="{{ url_for('admin_remove_keys') }}" class="menu-item {% if request.endpoint == 'admin_remove_keys' %}active{% endif %}">
+                🗑️ Remove Keys
+            </a>
+            <a href="{{ url_for('admin_sponsors') }}" class="menu-item {% if request.endpoint == 'admin_sponsors' %}active{% endif %}">
+                🔗 Sponsor Links
+            </a>
+            <div class="sidebar-actions">
+                <a href="{{ url_for('admin_api_code_page') }}" class="menu-item action-btn">
+                    🎮 Get Code
+                </a>
+                <a href="{{ url_for('clear_keys') }}" class="menu-item action-btn">
+                    🗑️ Clear My Keys
+                </a>
+                <form method="post" action="{{ url_for('admin_logout') }}" class="logout-form">
+                    <button type="submit" class="menu-item logout-btn">
+                        🚪 Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Main Content -->
+    <div class="admin-main">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+
+<style>
+.admin-container {
+    display: flex;
+    min-height: 80vh;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: rgba(15, 15, 15, 0.9);
+    border-radius: 1em;
+    border: 1.5px solid rgba(26, 117, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(26, 117, 255, 0.1);
+    overflow: hidden;
+}
+
+.admin-sidebar {
+    width: 280px;
+    background: rgba(20, 20, 20, 0.95);
+    border-right: 1px solid rgba(26, 117, 255, 0.2);
+    padding: 1.5em 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 0 1.5em 1.5em;
+    border-bottom: 1px solid rgba(26, 117, 255, 0.2);
+    margin-bottom: 1em;
+}
+
+.sidebar-header h3 {
+    color: #1a75ff;
+    margin: 0;
+    font-size: 1.2em;
+    text-shadow: 0 0 10px rgba(26, 117, 255, 0.5);
+}
+
+.sidebar-menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 0 1em;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8em 1em;
+    color: #f5f5f7;
+    text-decoration: none;
+    border-radius: 0.5em;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    font-weight: 500;
+}
+
+.menu-item:hover {
+    background: rgba(26, 117, 255, 0.1);
+    border-color: rgba(26, 117, 255, 0.3);
+    transform: translateX(5px);
+}
+
+.menu-item.active {
+    background: rgba(26, 117, 255, 0.2);
+    border-color: rgba(26, 117, 255, 0.4);
+    color: #1a75ff;
+    box-shadow: 0 0 15px rgba(26, 117, 255, 0.2);
+}
+
+.sidebar-actions {
+    margin-top: auto;
+    padding-top: 1em;
+    border-top: 1px solid rgba(26, 117, 255, 0.2);
+}
+
+.action-btn {
+    background: rgba(26, 117, 255, 0.1);
+    border-color: rgba(26, 117, 255, 0.3);
+    margin-bottom: 0.5em;
+}
+
+.action-btn:hover {
+    background: rgba(26, 117, 255, 0.2);
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-btn {
+    background: rgba(255, 59, 59, 0.1);
+    border-color: rgba(255, 59, 59, 0.3);
+    color: #ff6b6b;
+    width: 100%;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 59, 59, 0.2);
+    transform: translateX(5px);
+}
+
+.admin-main {
+    flex: 1;
+    padding: 2em;
+    overflow-y: auto;
+    background: rgba(15, 15, 15, 0.8);
+}
+
+/* Admin specific styles */
+.alert {
+    padding: 12px 16px;
+    margin: 1em 0;
+    border-radius: 8px;
+    border: 1px solid;
+    backdrop-filter: blur(10px);
+}
+
+.alert-success {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: rgba(0, 255, 0, 0.3);
+    color: #00ff00;
+}
+
+.alert-danger {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.3);
+    color: #ff6666;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    background: rgba(20, 20, 20, 0.9);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(26, 117, 255, 0.2);
+}
+
+table th {
+    background: rgba(26, 117, 255, 0.2);
+    color: #1a75ff;
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+table tr:hover {
+    background: rgba(26, 117, 255, 0.05);
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.status-active {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.status-used {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff6666;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.status-expired {
+    background: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+    border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
+.links {
+    display: flex;
+    gap: 1em;
+    margin-top: 1.5em;
+    flex-wrap: wrap;
+}
+
+.links a {
+    background: rgba(26, 117, 255, 0.1);
+    padding: 0.6em 1.2em;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #1a75ff;
+    border: 1px solid rgba(26, 117, 255, 0.3);
+    transition: all 0.3s ease;
+    font-size: 0.9em;
+}
+
+.links a:hover {
+    background: rgba(26, 117, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 117, 255, 0.2);
+}
+
+input, select, button, textarea {
+    background: rgba(20, 20, 20, 0.9);
+    border: 1px solid rgba(26, 117, 255, 0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #f5f5f7;
+    margin: 5px 0;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #1a75ff;
+    box-shadow: 0 0 0 3px rgba(26, 117, 255, 0.1);
+}
+
+button {
+    background: linear-gradient(135deg, #1a75ff, #0052cc);
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0052cc, #0047b3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 117, 255, 0.3);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #ee5a52, #dd4942);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+/* Form layouts */
+.form-group {
+    margin-bottom: 1.5em;
+}
+
+.form-row {
+    display: flex;
+    gap: 1em;
+    margin-bottom: 1em;
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+.form-row > * {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Card styles */
+.admin-card {
+    background: rgba(20, 20, 20, 0.9);
+    border-radius: 1em;
+    padding: 2em;
+    margin-bottom: 2em;
+    border: 1.5px solid rgba(26, 117, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.admin-card h2 {
+    margin-top: 0;
+    color: #1a75ff;
+    border-bottom: 1px solid rgba(26, 117, 255, 0.2);
+    padding-bottom: 0.5em;
+    margin-bottom: 1.5em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-container {
+        flex-direction: column;
+    }
+    
+    .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(26, 117, 255, 0.2);
+    }
+    
+    .sidebar-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 1em;
+    }
+    
+    .menu-item {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    .sidebar-actions {
+        display: flex;
+        gap: 0.5em;
+        border-top: none;
+        border-left: 1px solid rgba(26, 117, 255, 0.2);
+        padding-left: 1em;
+        margin-top: 0;
+    }
+    
+    .admin-main {
+        padding: 1.5em;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-row > * {
+        min-width: 100%;
+    }
+}
+</style>
+{% endblock %}

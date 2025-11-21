@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div style="color:#66ff66; font-size:1.2em; margin-bottom:1em;">
+        ✅ Keys cleared successfully!
+    </div>
+    <div style="color:#fff; margin-bottom:1.5em;">
+        Your session has been reset and any unused keys from your IP have been removed.
+        You can now claim a new key.
+    </div>
+    <a href="{{ url_for('index') }}" style="text-decoration: none;">
+        <button class="progress-btn">Get New Key</button>
+    </a>
+</div>
+{% endblock %}

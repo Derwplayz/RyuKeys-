@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="fail-msg" style="line-height:1.4;">
+        {% if message %}
+            {{ message|safe }}<br>
+        {% else %}
+            Bypass detected or invalid source. Your progress has been reset.<br>
+        {% endif %}
+        <a href="{% if return_url %}{{ return_url }}{% else %}/progress{% endif %}">Go back</a>.
+    </div>
+</div>
+{% endblock %}

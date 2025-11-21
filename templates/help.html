@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .help-card {
+        max-width: 800px !important;
+        width: 94vw !important;
+    }
+    .video-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        margin: 1.5em 0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 0 15px rgba(26, 117, 255, 0.2);
+        border: 1px solid rgba(26, 117, 255, 0.3);
+    }
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 12px;
+    }
+    .video-title {
+        text-align: center;
+        color: #1a75ff;
+        font-weight: bold;
+        margin: 0.5em 0 0.3em 0;
+        text-shadow: 0 0 5px rgba(26, 117, 255, 0.3);
+    }
+</style>
+
+<div class="card help-card">
+  <div style="font-size:1.35em;color:#1a75ff;margin-bottom:0.5em;font-weight:bold;text-shadow: 0 0 10px rgba(26, 117, 255, 0.5);">Help & Instructions</div>
+  
+  <div class="help-section">
+    <h3>📋 How to Get a Free Key</h3>
+    <ol>
+      <li>Click "Start" on the home page</li>
+      <li>Complete all 3 steps by visiting sponsor links</li>
+      <li>After each step, return and click "Claim Step"</li>
+      <li>After completing all steps, you'll receive your free key</li>
+    </ol>
+  </div>
+
+  <div class="help-section">
+    <h3>🔑 How to Use Your Key</h3>
+    <ul>
+      <li><strong>Free Keys:</strong> Send <code style="background: rgba(40, 40, 40, 0.6); padding: 2px 6px; border-radius: 4px; box-shadow: 0 0 5px rgba(0,0,0,0.3);">/Redeem YOUR_KEY</code> to the Discord bot</li>
+      <li><strong>Premium Keys:</strong> Use in the auto joiner application</li>
+      <li>Keys expire 12 hours after generation</li>
+    </ul>
+  </div>
+
+  <div class="help-section">
+    <h3>🎬 Video Tutorials</h3>
+    
+    <div style="margin: 1.5em 0;">
+      <div class="video-title">How to Get Your Key</div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/A6oRbuEe_5U" 
+                title="How to Get Your Ryu Key" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+        </iframe>
+      </div>
+      <div style="text-align: center; color: #b4b9c6; font-size: 0.9em;">
+        Watch this video to learn how to get your free key through the sponsor steps
+      </div>
+    </div>
+
+    <div style="margin: 2em 0;">
+      <div class="video-title">How to Login & Use Generators</div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/OPcxHRqazdc" 
+                title="How to Login and Use Ryu Generators" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+        </iframe>
+      </div>
+      <div style="text-align: center; color: #b4b9c6; font-size: 0.9em;">
+        Step-by-step guide for logging in and using the generators
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <h3>🚀 How to Login & Use Generators</h3>
+    
+    <div style="background: rgba(30, 30, 30, 0.6); padding: 1em; border-radius: 8px; margin: 1em 0; border-left: 4px solid #1a75ff;">
+      <h4 style="color:#1a75ff; margin-top:0;">Available Generators:</h4>
+      <ul style="margin:0.5em 0;">
+        <li><code style="background: rgba(40, 40, 40, 0.8); padding: 2px 6px; border-radius: 4px;">/freegen: roblox</code></li>
+        <li><code style="background: rgba(40, 40, 40, 0.8); padding: 2px 6px; border-radius: 4px;">/boostgen: roblox</code></li>
+        <li><code style="background: rgba(40, 40, 40, 0.8); padding: 2px 6px; border-radius: 4px;">/premiumgen: roblox</code></li>
+      </ul>
+    </div>
+
+    <h4>Step 1: Microsoft Login</h4>
+    <ol>
+      <li><strong>Format:</strong> Email:Password</li>
+      <li><strong>Go To:</strong> <a href="https://login.microsoftonline.com/" target="_blank" style="color:#66a3ff;">https://login.microsoftonline.com/</a></li>
+      <li>Login using the email and password</li>
+    </ol>
+
+    <div style="background: rgba(255, 51, 51, 0.1); padding: 0.8em; border-radius: 6px; margin: 1em 0; border: 1px solid rgba(255, 51, 51, 0.3);">
+      <strong style="color:#ff6666;">Errors (If This Happens):</strong><br>
+      <span style="color:#ff9999;">Locked Account → Move On</span>
+    </div>
+
+    <h4>Step 2: Roblox Password Recovery</h4>
+    <ol>
+      <li><strong>Go To:</strong> <a href="https://www.roblox.com/login/forgot-password-or-username" target="_blank" style="color:#66a3ff;">https://www.roblox.com/login/forgot-password-or-username</a></li>
+      <li>Enter the email address</li>
+      <li>You should receive an email from Roblox with a digit code</li>
+      <li>Enter the code from the email</li>
+    </ol>
+
+    <div style="background: rgba(255, 153, 51, 0.1); padding: 0.8em; border-radius: 6px; margin: 1em 0; border: 1px solid rgba(255, 153, 51, 0.3);">
+      <strong style="color:#ff9933;">Common Errors & Solutions:</strong><br>
+      <ul style="color:#ffcc99; margin:0.5em 0;">
+        <li><strong>Didn't get an email:</strong> No Roblox account is linked to this email</li>
+        <li><strong>Too many requests:</strong> IP problem or email has too many recovery attempts</li>
+        <li><strong>No email from Roblox:</strong> Account got stolen already or account wasn't linked</li>
+      </ul>
+      <div style="color:#ffcc66; font-weight:bold; margin-top:0.5em;">
+        You should know what to do from there
+      </div>
+    </div>
+  </div>
+
+  <div class="help-section">
+    <h3>🚨 Common Issues & Solutions</h3>
+    <ul>
+      <li><strong>Claim button not working?</strong> Make sure you complete the sponsor task first</li>
+      <li><strong>Can't claim key?</strong> You can only claim one key per IP address</li>
+      <li><strong>Progress reset?</strong> Don't use back button - always use the provided navigation</li>
+      <li><strong>Sponsor links not working?</strong> Disable ad blockers for this site</li>
+      <li><strong>Video not loading?</strong> Check if YouTube is blocked in your region or network</li>
+    </ul>
+  </div>
+
+  <div class="help-section">
+    <h3>💰 Key Types Explained</h3>
+    <ul>
+      <li><strong>Free Keys:</strong> Basic access via Discord bot (12-hour expiry)</li>
+      <li><strong>Premium Keys:</strong> Enhanced features for auto joiner</li>
+      <li><strong>Ultra Keys:</strong> Maximum features and priority access</li>
+      <li><strong>Zero Ad Keys:</strong> Ad-free experience with free generator</li>
+    </ul>
+  </div>
+
+  <div class="help-section">
+    <h3>🔒 Security Notes</h3>
+    <ul>
+      <li>Never share your keys with anyone</li>
+      <li>Keys are tied to your IP address</li>
+      <li>Each key can only be used once</li>
+      <li>Report suspicious activity to administrators</li>
+    </ul>
+  </div>
+
+  <div style="margin-top: 1.5em; padding: 1em; background: rgba(42, 43, 46, 0.6); border-radius: 0.5em; border-left: 4px solid #66ff66; box-shadow: 0 0 10px rgba(0,0,0,0.2);">
+    <div style="color: #66ff66; font-weight: bold;">💡 Pro Tip</div>
+    <div style="color: #ffcc66; margin-top: 0.5em;">
+      Watch the video tutorials for step-by-step visual guidance on getting your key and using the generators!
+    </div>
+  </div>
+</div>
+{% endblock %}

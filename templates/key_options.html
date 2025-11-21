@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div style="font-size:1.35em;color:#1a75ff;margin-bottom:0.5em;font-weight:bold;text-shadow: 0 0 10px rgba(26, 117, 255, 0.5);">Choose Your Key Type</div>
+  <div style="font-size:1.02em;color:#fff;opacity:0.78;margin-bottom:1.5em;line-height:1.4;">
+    Select the type of key you want to get for the auto joiner
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1em; margin-bottom: 1.5em;">
+    <a href="{{ url_for('index') }}" style="text-decoration: none;">
+      <div style="background: linear-gradient(135deg, #2d7d46, #1e5631); padding: 1.2em; border-radius: 0.8em; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(40, 167, 69, 0.3); box-shadow: 0 0 15px rgba(0, 204, 68, 0.2);">
+        <div style="font-size:1.2em;font-weight:bold;color:#fff;">🎁 Get Free Key</div>
+        <div style="font-size:0.9em;color:#e0ffe8;margin-top:0.3em;line-height:1.3;">
+          Complete tasks to get a free key (for Discord bot)
+        </div>
+      </div>
+    </a>
+
+    <a href="https://discord.com/channels/@me/1414705483926868002" target="_blank" style="text-decoration: none;">
+      <div style="background: linear-gradient(135deg, #1a75ff, #0052cc); padding: 1.2em; border-radius: 0.8em; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(26, 117, 255, 0.3); box-shadow: 0 0 15px rgba(26, 117, 255, 0.2);">
+        <div style="font-size:1.2em;font-weight:bold;color:#fff;">⭐ Get Premium Key</div>
+        <div style="font-size:0.9em;color:#e0e8ff;margin-top:0.3em;line-height:1.3;">
+          Purchase premium key for auto joiner (Discord)
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div style="color:#ffcc66;font-size:0.95em;text-align:center;line-height:1.3;">
+    💡 Free keys work with Discord bot, Premium keys work with Auto Joiner
+  </div>
+</div>
+
+<style>
+  @media (max-width: 480px) {
+    .card a div {
+      padding: 1em !important;
+    }
+    .card a div div:first-child {
+      font-size: 1.1em !important;
+    }
+    .card a div div:last-child {
+      font-size: 0.85em !important;
+    }
+  }
+</style>
+{% endblock %}

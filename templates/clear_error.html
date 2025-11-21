@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div style="color:#ff6666; font-size:1.2em; margin-bottom:1em;">
+        ⚠️ No keys to clear
+    </div>
+    <div style="color:#fff; margin-bottom:1.5em;">
+        No active keys were found for your IP address to clear.
+    </div>
+    <a href="{{ url_for('index') }}" style="text-decoration: none;">
+        <button class="progress-btn">Go Home</button>
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="admin-card">
+    <h2>🔗 Edit Sponsor Links</h2>
+    
+    {% if message %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+    
+    <form method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Step</th>
+                    <th>LootLabs Link</th>
+                    <th>Linkvertise Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(1, max_level + 1) %}
+                <tr>
+                    <td style="background: rgba(26, 117, 255, 0.1); font-weight: bold;">Step {{ i }}</td>
+                    <td><input type="text" name="lootlabs_{{ i }}" value="{{ sponsor_links.lootlabs[i|string] }}" style="width: 100%;"></td>
+                    <td><input type="text" name="linkvertise_{{ i }}" value="{{ sponsor_links.linkvertise[i|string] }}" style="width: 100%;"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div style="margin-top: 1.5em;">
+            <button type="submit">💾 Save Links</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

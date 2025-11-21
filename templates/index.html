@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div style="font-size:1.35em;color:#1a75ff;margin-bottom:0.2em;font-weight:bold;text-shadow: 0 0 10px rgba(26, 117, 255, 0.5);">Welcome to Ryu Market Generator!</div>
+  <div style="font-size:1.02em;color:#fff;opacity:0.78;margin-bottom:1.1em;line-height:1.4;">
+    {% if session.discord_user %}
+    Welcome back, {{ session.discord_user.username }}! Access your generators below.
+    {% else %}
+    Unlock generator access by logging in with Discord to verify your roles.
+    {% endif %}
+  </div>
+  
+  {% if session.discord_user %}
+  <div style="display: flex; flex-direction: column; gap: 1em;">
+    <a href="{{ url_for('generators') }}" style="text-decoration: none;">
+      <button class="progress-btn" style="width: 100%;">
+        <i class="fas fa-robot"></i> Go to Generators
+      </button>
+    </a>
+    <a href="{{ url_for('discord_logout') }}" style="text-decoration: none;">
+      <button class="progress-btn" style="width: 100%; background: linear-gradient(135deg, #ff6b6b, #ee5a52);">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </a>
+  </div>
+  {% else %}
+  <div style="display: flex; flex-direction: column; gap: 1em;">
+    <a href="{{ url_for('discord_login') }}" style="text-decoration: none;">
+      <button class="progress-btn" style="width: 100%; background: linear-gradient(135deg, #5865F2, #4752C4);">
+        <i class="fab fa-discord"></i> Login with Discord
+      </button>
+    </a>
+    <a href="{{ url_for('key_options') }}" style="text-decoration: none;">
+      <button class="progress-btn" style="width: 100%;">
+        <i class="fas fa-key"></i> Get Free Key
+      </button>
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

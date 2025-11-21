@@ -1,0 +1,103 @@
+{% extends "admin_base.html" %}
+
+{% block admin_content %}
+<div class="admin-card">
+    <h2>📊 Admin Dashboard</h2>
+    
+    {% if mass_free_msg %}
+    <div class="alert alert-success">{{ mass_free_msg }}</div>
+    {% endif %}
+    
+    <div class="form-row">
+        <form method="post" action="{{ url_for('admin_add_key') }}" class="admin-form">
+            <h3 style="margin-top: 0; color: #1a75ff;">Generate Premium Key</h3>
+            <div class="form-group">
+                <select name="keytype" required>
+                    <option value="premium">Premium</option>
+                    <option value="ultra">Ultra</option>
+                    <option value="zeroad">Zero Ad (Free Gen)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select name="duration" id="duration-select" onchange="toggleDateInput()" required>
+                    <option value="1d">1 Day</option>
+                    <option value="3d">3 Days</option>
+                    <option value="1w">1 Week</option>
+                    <option value="2w">2 Weeks</option>
+                    <option value="1m">1 Month</option>
+                    <option value="3m">3 Months</option>
+                    <option value="6m">6 Months</option>
+                    <option value="1y">1 Year</option>
+                    <option value="forever">Lifetime (No Expire)</option>
+                    <option value="custom">Custom Date…</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="date" name="custom_date" id="custom-date-input" style="display:none;">
+            </div>
+            <button type="submit">Generate New Key</button>
+        </form>
+
+        <form method="post" class="admin-form">
+            <h3 style="margin-top: 0; color: #1a75ff;">Mass Generate Free Keys</h3>
+            <div class="form-group">
+                <input type="number" name="mass_free_count" min="1" max="1000" placeholder="How many keys?" required>
+            </div>
+            <div class="form-group">
+                <select name="mass_free_prefix" id="mass-free-prefix">
+                    <option value="HULK">HULK</option>
+                    <option value="ONE">ONE</option>
+                    <option value="CUSTOM">Custom</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" name="custom_prefix" placeholder="Custom prefix" style="display: none;" id="custom-prefix-input">
+            </div>
+            <button type="submit">Generate Free Keys</button>
+        </form>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>🔑 Active Keys</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Key</th>
+                <th>Expires</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key in keys %}
+            <tr>
+                <td><strong>{{ key.type }}</strong></td>
+                <td><code>{{ key.code }}</code></td>
+                <td>{{ key.expires }}</td>
+                <td><span class="status-badge status-{{ key.status }}">{{ key.status.capitalize() }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="links">
+        <a href="{{ url_for('admin_download', keytype='premium') }}">📥 Download Premium Keys</a>
+        <a href="{{ url_for('admin_download', keytype='ultra') }}">📥 Download Ultra Keys</a>
+        <a href="{{ url_for('admin_download', keytype='zeroad') }}">📥 Download Zero Ad Keys</a>
+    </div>
+</div>
+
+<script>
+    function toggleDateInput() {
+        const select = document.getElementById('duration-select');
+        const dateInput = document.getElementById('custom-date-input');
+        dateInput.style.display = select.value === 'custom' ? 'block' : 'none';
+    }
+
+    document.getElementById('mass-free-prefix').addEventListener('change', function() {
+        const customInput = document.getElementById('custom-prefix-input');
+        customInput.style.display = this.value === 'CUSTOM' ? 'block' : 'none';
+    });
+</script>
+{% endblock %}
